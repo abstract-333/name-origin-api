@@ -323,6 +323,7 @@ dependencies = [
     { name = "argon2-cffi" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "punq" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
@@ -350,6 +351,7 @@ requires-dist = [
     { name = "argon2-cffi", specifier = ">=23.1.0" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "punq", specifier = ">=0.7.0" },
     { name = "pydantic", specifier = ">=2.11.5" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
@@ -419,6 +421,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/08/39/679ca9b26c7bb2999ff122d50faa301e49af82ca9c066ec061cfbc0c6784/pre_commit-4.2.0.tar.gz", hash = "sha256:601283b9757afd87d40c4c4a9b2b5de9637a8ea02eaff7adc2d0fb4e04841146", size = 193424 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/74/a88bf1b1efeae488a0c0b7bdf71429c313722d1fc0f377537fbe554e6180/pre_commit-4.2.0-py2.py3-none-any.whl", hash = "sha256:a009ca7205f1eb497d10b845e52c838a98b6cdd2102a6c8e4540e94ee75c58bd", size = 220707 },
+]
+
+[[package]]
+name = "punq"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/f1/c31e86ce1ab85837d8e6a6868163bae3afaef01c49d45f1bfa479c1a5b90/punq-0.7.0.tar.gz", hash = "sha256:bb7a6cc75a2e7d51b861b0e11f4830a12617b3ee33dbced9ce2be6a98ba39d63", size = 7254 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/92/6a/c89602766d4416371eb801c3de89eda45fcea4435836ba7c01d1da88d47a/punq-0.7.0-py3-none-any.whl", hash = "sha256:7e0aca446c36a73674ec3fc078ec5e90e7a172ee349537d075ff20d73c3b1810", size = 7719 },
 ]
 
 [[package]]
