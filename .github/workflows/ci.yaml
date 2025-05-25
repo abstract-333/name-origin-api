@@ -56,8 +56,11 @@ jobs:
             pyproject.toml
             uv.lock
 
-      - name: Install dependencies
+      - name: Install test dependencies
         run: uv sync --group test
+
+      - name: Install app dependencies
+        run: uv sync test
 
       - name: Test with pytest
         run: uv run pytest
