@@ -28,7 +28,6 @@ class TestNameVT:
             assert Name(name).as_generic_type() == name
 
     def test_name_equality(self) -> None:
-
         name1 = Name('John')
         name2 = Name('John')
         name3 = Name('Jane')
@@ -36,7 +35,6 @@ class TestNameVT:
         assert name1 == name2  # Same value
         assert name1 != name3  # Different value
         assert name1 != 'John'  # Different type
-
 
     def test_create_name(self, faker: Faker) -> None:
         name_length = faker.random_int(min=1, max=85)
@@ -101,7 +99,6 @@ class TestProbabilityVT:
         assert prob1 == prob2  # Same value
         assert prob1 != prob3  # Different value
         assert prob1 != 0.5  # Different type
-
 
     def test_create_probability(self, faker: Faker) -> None:
         random_prob = faker.pyfloat(min_value=0.0, max_value=1.0)
