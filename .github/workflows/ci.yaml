@@ -56,11 +56,13 @@ jobs:
             pyproject.toml
             uv.lock
 
-      - name: Install app dependencies
-        run: uv sync
-
       - name: Install test dependencies
         run: uv sync --group test
+
+      - name: Set environment variables
+        run: |
+          cp .env.example .env  # Copy .env.example to .env if .env is not available
+          cat .env  # Verify the .env file content
 
       - name: Test with pytest
         run: uv run pytest
