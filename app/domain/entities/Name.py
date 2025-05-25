@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, UTC
-from uuid import UUID
-from uuid_utils import uuid7
+from uuid_utils import UUID, uuid7
 from domain.entities.country import CountryEntity
 from domain.values.name import CountOfRequests, Name, Probability
 
@@ -11,7 +10,7 @@ class BaseNameEntity:
     """Name entity for storing name-related data.
     Attributes:
         id: Unique identifier using UUID-7
-        name: The name to be analyzed (max 85 characters)
+        name: The name to be analyzed (max 100 characters)
         count_of_requests: Number of represented rows of the name
         last_accessed: UTC timestamp of the last request
         probability: Probability score for the name's country association
