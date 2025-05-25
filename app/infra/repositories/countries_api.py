@@ -4,7 +4,7 @@ from domain.entities.country import CountryEntity
 from infra.repositories.base import BaseCountryRepository
 
 
-class RestCountriesRepository(BaseCountryRepository):
+class CountriesAPIRepository(BaseCountryRepository):
     """Implementation of BaseCountryRepository using the REST Countries API.
 
     This repository fetches country data from https://restcountries.com/v3.1/

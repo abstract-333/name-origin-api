@@ -1,12 +1,12 @@
 import pytest
 import httpx
 from domain.entities.country import CountryEntity
-from infra.repositories.countries_api import RestCountriesRepository
+from infra.repositories.countries_api import CountriesAPIRepository
 
 
 @pytest.mark.asyncio
 async def test_get_country_success() -> None:
-    repo = RestCountriesRepository()
+    repo = CountriesAPIRepository()
     result = await repo.get_country('US')
 
     assert isinstance(result, CountryEntity)
@@ -29,7 +29,7 @@ async def test_get_country_success() -> None:
 
 @pytest.mark.asyncio
 async def test_get_country_not_found() -> None:
-    repo = RestCountriesRepository()
+    repo = CountriesAPIRepository()
     with pytest.raises(httpx.HTTPStatusError) as exc_info:
         await repo.get_country('NONEXISTENT')
     assert exc_info.value.response.status_code == 400
@@ -37,7 +37,7 @@ async def test_get_country_not_found() -> None:
 
 @pytest.mark.asyncio
 async def test_get_list_of_countries() -> None:
-    repo = RestCountriesRepository()
+    repo = CountriesAPIRepository()
     results = await repo.get_list_of_countries()
 
     assert isinstance(results, set)

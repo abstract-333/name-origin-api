@@ -39,7 +39,7 @@ class BaseCountryRepository(ABC):
 
 
 @dataclass
-class BaseNameRepository(ABC):
+class BaseNameOriginRepository(ABC):
     """Abstract base class for name repository implementations.
 
     This class defines the interface for repositories that handle name-related data operations,
@@ -47,7 +47,9 @@ class BaseNameRepository(ABC):
     """
 
     @abstractmethod
-    async def get_name_probability(self, name: str) -> set[BaseNameEntity] | None:
+    async def get_name_origins_probability(
+        self, name: str
+    ) -> set[BaseNameEntity] | None:
         """Calculate and retrieve the probability information for a given name.
 
         Args:

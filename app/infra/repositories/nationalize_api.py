@@ -1,10 +1,10 @@
 import httpx
 from domain.entities.name import NameStrEntity, BaseNameEntity
 from domain.values.name import Name, Probability, CountOfRequests
-from infra.repositories.base import BaseNameRepository
+from infra.repositories.base import BaseNameOriginRepository
 
 
-class NationalizeRepository(BaseNameRepository):
+class NationalizeRepository(BaseNameOriginRepository):
     """Implementation of BaseNameRepository using the Nationalize API.
 
     This repository fetches name nationality probability data from https://api.nationalize.io/
@@ -13,7 +13,9 @@ class NationalizeRepository(BaseNameRepository):
     def __init__(self) -> None:
         self.base_url = 'https://api.nationalize.io'
 
-    async def get_name_probability(self, name: str) -> set[BaseNameEntity] | None:
+    async def get_name_origins_probability(
+        self, name: str
+    ) -> set[BaseNameEntity] | None:
         """Fetch nationality probability for a given name from the Nationalize API.
 
         Args:

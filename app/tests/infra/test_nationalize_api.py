@@ -6,7 +6,7 @@ from infra.repositories.nationalize_api import NationalizeRepository
 @pytest.mark.asyncio
 async def test_get_name_probability_success() -> None:
     repo = NationalizeRepository()
-    results = await repo.get_name_probability('mark')
+    results = await repo.get_name_origins_probability('mark')
 
     assert isinstance(results, set)
     assert len(results) > 0
@@ -22,6 +22,6 @@ async def test_get_name_probability_success() -> None:
 @pytest.mark.asyncio
 async def test_get_name_probability_not_found() -> None:
     repo = NationalizeRepository()
-    assert not await repo.get_name_probability(
+    assert not await repo.get_name_origins_probability(
         'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokai'
     )
