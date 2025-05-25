@@ -21,7 +21,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "0.7.8"
+          version: "0.6.3"
           enable-cache: true
           cache-dependency-glob: |
             .pre-commit-config.yaml
@@ -50,7 +50,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "0.7.8"
+          version: "0.6.3"
           enable-cache: true
           cache-dependency-glob: |
             pyproject.toml
