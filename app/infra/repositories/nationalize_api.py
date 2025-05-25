@@ -1,7 +1,7 @@
 import httpx
-from app.domain.entities.name import NameStrEntity, BaseNameEntity
-from app.domain.values.name import Name, Probability, CountOfRequests
-from app.infra.repositories.base import BaseNameRepository
+from domain.entities.name import NameStrEntity, BaseNameEntity
+from domain.values.name import Name, Probability, CountOfRequests
+from infra.repositories.base import BaseNameRepository
 
 
 class NationalizeRepository(BaseNameRepository):

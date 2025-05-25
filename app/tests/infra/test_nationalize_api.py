@@ -1,6 +1,6 @@
 import pytest
-from app.domain.entities.name import NameStrEntity
-from app.infra.repositories.nationalize_api import NationalizeRepository
+from domain.entities.name import NameStrEntity
+from infra.repositories.nationalize_api import NationalizeRepository
 
 
 @pytest.mark.asyncio

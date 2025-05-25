@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from app.domain.exceptions.name import (
+from domain.exceptions.name import (
     EmptyNameException,
     NameTooLongException,
     ProbabilityTooHighException,
     ProbabilityTooLowException,
     NegativeCountOfRequestsException,
 )
-from app.domain.values.base import BaseValueObject
+from domain.values.base import BaseValueObject
 
 
 @dataclass(frozen=True)

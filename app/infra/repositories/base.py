@@ -4,8 +4,8 @@ from abc import (
 )
 from dataclasses import dataclass
 
-from app.domain.entities.country import CountryEntity
-from app.domain.entities.name import BaseNameEntity
+from domain.entities.country import CountryEntity
+from domain.entities.name import BaseNameEntity
 
 
 @dataclass

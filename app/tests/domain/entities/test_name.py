@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
-from app.domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
-from app.domain.entities.country import CountryEntity
-from app.domain.values.name import CountOfRequests, Name, Probability
+from domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
+from domain.entities.country import CountryEntity
+from domain.values.name import CountOfRequests, Name, Probability
 
 
 def test_base_name_entity_creation() -> None:

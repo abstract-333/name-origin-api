@@ -1,7 +1,7 @@
 import pytest
 import httpx
-from app.domain.entities.country import CountryEntity
-from app.infra.repositories.countries_api import RestCountriesRepository
+from domain.entities.country import CountryEntity
+from infra.repositories.countries_api import RestCountriesRepository
 
 
 @pytest.mark.asyncio

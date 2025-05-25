@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import datetime, UTC
-from uuid_utils import UUID, uuid7
-from app.domain.entities.country import CountryEntity
-from app.domain.values.name import CountOfRequests, Name, Probability
+from uuid import UUID
+from uuid_utils import uuid7
+from domain.entities.country import CountryEntity
+from domain.values.name import CountOfRequests, Name, Probability
 
 
 @dataclass

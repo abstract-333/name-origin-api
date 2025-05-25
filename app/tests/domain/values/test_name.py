@@ -2,8 +2,8 @@ from typing import Any
 import pytest
 from faker import Faker
 from contextlib import nullcontext as does_not_raise
-from app.domain.values.name import Name, CountOfRequests, Probability
-from app.domain.exceptions.name import (
+from domain.values.name import Name, CountOfRequests, Probability
+from domain.exceptions.name import (
     NameTooLongException,
     EmptyNameException,
     NegativeCountOfRequestsException,

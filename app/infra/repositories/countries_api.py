@@ -1,7 +1,7 @@
 from typing import Any
 import httpx
-from app.domain.entities.country import CountryEntity
-from app.infra.repositories.base import BaseCountryRepository
+from domain.entities.country import CountryEntity
+from infra.repositories.base import BaseCountryRepository
 
 
 class RestCountriesRepository(BaseCountryRepository):

@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 
-from app.domain.entities.country import CountryEntity
+from domain.entities.country import CountryEntity
 
 
 def test_country_entity_creation() -> None:
