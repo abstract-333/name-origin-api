@@ -10,11 +10,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-sys.path.append(os.path.join(sys.path[0], "src"))
+sys.path.append(os.path.join(sys.path[0], 'src'))
 from settings import settings_obj
 from models import BaseModelORM
 
-config.set_main_option("sqlalchemy.url", settings_obj.database_url)
+config.set_main_option('sqlalchemy.url', settings_obj.database_url)
 target_metadata = BaseModelORM.metadata
 
 
@@ -27,12 +27,12 @@ def run_migrations_offline() -> None:
     Calls to context.execute() here emit the given string to the
     script output.
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = config.get_main_option('sqlalchemy.url')
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
         compare_type=True,
         compare_server_default=True,
     )
@@ -48,13 +48,13 @@ def run_migrations_online() -> None:
 
     def process_revision_directives(context, revision, directives):
         # 20240101_21_10_24 for a migration generated on 1st January, 2024 at 21:10:24
-        rev_id = datetime.now().strftime("%Y%m%d_%H_%M_%S")
+        rev_id = datetime.now().strftime('%Y%m%d_%H_%M_%S')
         for directive in directives:
             directive.rev_id = rev_id
 
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool,
     )
 
