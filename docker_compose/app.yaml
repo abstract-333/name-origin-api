@@ -1,6 +1,8 @@
 networks:
   storages:
     driver: bridge
+  storages_prod:
+    driver: bridge 
 
 services:
   main-app:
@@ -38,6 +40,6 @@ services:
     env_file:
       - ../.env.prod
     networks:
-      - storages
+      - storages_prod
     profiles:
       - prod

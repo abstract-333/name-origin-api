@@ -5,6 +5,7 @@ ENV = --env-file .env
 ENV_PROD = --env-file .env.prod
 APP_FILE = docker_compose/app.yaml
 STORAGES_FILE = docker_compose/storages.yaml
+STORAGES_PROD_FILE = docker_compose/storages.prod.yaml
 APP_CONTAINER = main-app
 PROD_CONTAINER = main-app-prod
 PROD=--profile prod
@@ -17,7 +18,7 @@ all:
 
 .PHONY: all-prod
 all-prod:
-	${DC} -f ${STORAGES_FILE} -f ${APP_FILE} ${ENV_PROD} ${PROD} up --build -d
+	${DC} ${PROD} -f ${STORAGES_PROD_FILE} -f ${APP_FILE} ${ENV_PROD} up --build -d
 
 .PHONY: app
 app:
@@ -31,6 +32,10 @@ app-prod:
 .PHONY: storages
 storages:
 	${DC} -f ${STORAGES_FILE} ${ENV} up --build -d
+
+.PHONY: storages-prod
+storages-prod:
+	${DC} -f ${STORAGES_PROD_FILE} ${ENV_PROD} up --build -d
 
 
 .PHONY: app-down
@@ -48,6 +53,11 @@ storages-down:
 	${DC} -f ${STORAGES_FILE} down
 
 
+.PHONY: storages-prod-down
+storages-prod-down:
+	${DC} -f ${STORAGES_PROD_FILE} down
+
+
 .PHONY: all-down
 all-down:
 	${DC} -f ${STORAGES_FILE} -f ${APP_FILE} ${DEV} down
@@ -55,7 +65,7 @@ all-down:
 
 .PHONY: all-prod-down
 all-prod-down:
-	${DC} -f ${STORAGES_FILE} -f ${APP_FILE} ${PROD} down
+	${DC} -f ${STORAGES_PROD_FILE} -f ${APP_FILE} ${PROD} down
 
 
 .PHONY: app-logs
