@@ -1,12 +1,13 @@
 from functools import lru_cache
-from typing import Container
+from collections.abc import Container
 from punq import (
     Container,
     Scope,
 )
-from infra.repositories.base import BaseCountryRepository, BaseNameOriginRepository
+from infra.repositories.base import BaseCountryAPIRepository, BaseNameOriginAPIRepository
 from infra.repositories.countries_api import CountriesAPIRepository
 from infra.repositories.nationalize_api import NationalizeRepository
+from infra.repositories.session_generator import SessionGenerator
 from logic.commands.name import GetNameOriginsCommand, GetNameOriginsCommandHandler
 from logic.mediator import Mediator
 from settings.config import Config
@@ -23,19 +24,32 @@ def _init_container() -> Container:
     container.register(Config, instance=Config(), scope=Scope.singleton)
     config: Config = container.resolve(Config)
 
-    def init_nationalize_name_repository() -> BaseNameOriginRepository:
+    def create_async_session() -> SessionGenerator:
+        return SessionGenerator(
+            db_url=config.postgres_url,
+            debug=config.debug,
+        )
+    
+    container.register(
+        SessionGenerator,
+        factory=create_async_session,
+        scope=Scope.singleton,
+    )
+    session = container.resolve(SessionGenerator)
+    
+    def init_nationalize_name_repository() -> BaseNameOriginAPIRepository:
         return NationalizeRepository(base_url=config.nationalize_api_url)
 
-    def init_countries_api_repository() -> BaseCountryRepository:
+    def init_countries_api_repository() -> BaseCountryAPIRepository:
         return CountriesAPIRepository(base_url=config.rest_countries_api_url)
 
     container.register(
-        BaseNameOriginRepository,
+        BaseNameOriginAPIRepository,
         factory=init_nationalize_name_repository,
         scope=Scope.singleton,
     )
     container.register(
-        BaseCountryRepository,
+        BaseCountryAPIRepository,
         factory=init_countries_api_repository,
         scope=Scope.singleton,
     )

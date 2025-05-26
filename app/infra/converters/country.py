@@ -63,4 +63,4 @@ class CountryConverter(BaseConverter[CountryModel, CountryEntity]):
             coat_of_arms_png=entity.coat_of_arms_png,
             coat_of_arms_svg=entity.coat_of_arms_svg,
             borders=','.join(sorted(entity.borders)) if entity.borders else None,
-        ) 
+        )

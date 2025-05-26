@@ -20,7 +20,7 @@ class Name(BaseValueObject[str]):
 
     def validate(self) -> None:
         """Validate the name value."""
-        if not self.value:
+        if not self.value or not self.value.strip():
             raise EmptyNameException()
 
         if len(self.value) > 100:

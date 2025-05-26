@@ -40,4 +40,4 @@ class NameConverter(BaseConverter[NameOriginModel, NameEntity]):
             probability=entity.probability.as_generic_type(),
             count_of_requests=entity.count_of_requests.as_generic_type(),
             country_code=entity.country.iso_alpha2_code,
-        ) 
+        )

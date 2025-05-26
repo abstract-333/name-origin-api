@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from typing import cast
 from fastapi import FastAPI
-from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import ORJSONResponse
 from punq import Container
 
@@ -9,6 +8,7 @@ from application.static_docs import register_static_docs_routes
 from application.v1.name.handlers import router as name_router_v1
 from logic.init import init_container
 from settings.config import Config
+from brotli_asgi import BrotliMiddleware
 
 
 @asynccontextmanager
@@ -37,7 +37,11 @@ def create_app() -> FastAPI:
     )
 
     # Add gzip compression middleware
-    fastapi_app.add_middleware(GZipMiddleware, minimum_size=1000)
+    fastapi_app.add_middleware(
+        middleware_class=BrotliMiddleware,
+        quality=6,
+        minimum_size=1000,
+    )
 
     register_static_docs_routes(app=fastapi_app)
 

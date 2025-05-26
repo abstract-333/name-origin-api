@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, override
 import httpx
 from domain.entities.country import CountryEntity
-from infra.repositories.base import BaseCountryRepository
+from infra.repositories.base import BaseCountryAPIRepository
 
 
 @dataclass
-class CountriesAPIRepository(BaseCountryRepository):
+class CountriesAPIRepository(BaseCountryAPIRepository):
     """Implementation of BaseCountryRepository using the REST Countries API.
 
     This repository fetches country data from https://restcountries.com/v3.1/
@@ -14,21 +14,23 @@ class CountriesAPIRepository(BaseCountryRepository):
 
     base_url: str
 
-    async def get_list_of_countries(self) -> set[CountryEntity]:
+    @override
+    async def get_list_of_countries(self) -> list[CountryEntity]:
         """Fetch all countries from the REST Countries API.
 
         Returns:
-            set[CountryEntity]: A set of CountryEntity objects representing all countries.
+            list[CountryEntity]: A list of CountryEntity objects representing all countries.
         """
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.base_url}/all')
             response.raise_for_status()
 
             countries_data = response.json()
-            return {
+            return [
                 self._map_to_entity(country_data) for country_data in countries_data
-            }
+            ]
 
+    @override
     async def get_country(self, name: str) -> CountryEntity | None:
         """Fetch a specific country by name from the REST Countries API.
 
@@ -53,7 +55,8 @@ class CountriesAPIRepository(BaseCountryRepository):
                 return None
             raise
 
-    def _map_to_entity(self, data: dict[str, Any]) -> CountryEntity:
+    @staticmethod
+    def _map_to_entity(data: dict[str, Any]) -> CountryEntity:
         """Map REST Countries API response to CountryEntity.
 
         Args:

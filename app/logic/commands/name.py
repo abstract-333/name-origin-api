@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from domain.entities.country import CountryEntity
 from domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
-from infra.repositories.base import BaseCountryRepository, BaseNameOriginRepository
+from infra.repositories.base import BaseCountryAPIRepository, BaseNameOriginAPIRepository
 from logic.commands.base import BaseCommand, CommandHandler
 from logic.exceptions.country import CountryNotFoundException
 from logic.exceptions.name import NameNotFoundException
@@ -15,19 +15,19 @@ class GetNameOriginsCommand(BaseCommand):
 
 @dataclass(frozen=True)
 class GetNameOriginsCommandHandler(
-    CommandHandler[GetNameOriginsCommand, set[NameEntity]]
+    CommandHandler[GetNameOriginsCommand, list[NameEntity]]
 ):
-    name_origin_repository: BaseNameOriginRepository
-    country_repository: BaseCountryRepository
+    name_origin_repository: BaseNameOriginAPIRepository
+    country_repository: BaseCountryAPIRepository
 
-    async def handle(self, command: GetNameOriginsCommand) -> set[NameEntity]:
+    async def handle(self, command: GetNameOriginsCommand) -> list[NameEntity]:
         name_origin: (
-            set[BaseNameEntity] | None
+            list[BaseNameEntity] | None
         ) = await self.name_origin_repository.get_name_origins_probability(command.name)
         if not name_origin:
             raise NameNotFoundException(name=command.name)
 
-        name_origins_with_country_entity: set[NameEntity] = set()
+        name_origins_with_country_entity: list[NameEntity] = []
 
         for name_str_entity in name_origin:
             if not isinstance(name_str_entity, NameStrEntity):
@@ -47,5 +47,5 @@ class GetNameOriginsCommandHandler(
                 probability=name_str_entity.probability,
                 country=country_info,
             )
-            name_origins_with_country_entity.add(name_entity)
-        return name_origins_with_country_entity
+            name_origins_with_country_entity.append(name_entity)
+        return sorted(name_origins_with_country_entity, key=lambda x: x.probability.as_generic_type(), reverse=True)

@@ -9,7 +9,7 @@ from domain.entities.name import BaseNameEntity
 
 
 @dataclass
-class BaseCountryRepository(ABC):
+class BaseCountryAPIRepository(ABC):
     """Abstract base class for country repository implementations.
 
     This class defines the interface for repositories that handle country-related data operations.
@@ -17,11 +17,11 @@ class BaseCountryRepository(ABC):
     """
 
     @abstractmethod
-    async def get_list_of_countries(self) -> set[CountryEntity]:
+    async def get_list_of_countries(self) -> list[CountryEntity]:
         """Retrieve a list of all available countries.
 
         Returns:
-            set[CountryEntity]: A set of CountryEntity objects representing all available countries.
+            list[CountryEntity]: A list of CountryEntity objects representing all available countries.
         """
         ...
 
@@ -39,7 +39,7 @@ class BaseCountryRepository(ABC):
 
 
 @dataclass
-class BaseNameOriginRepository(ABC):
+class BaseNameOriginAPIRepository(ABC):
     """Abstract base class for name repository implementations.
 
     This class defines the interface for repositories that handle name-related data operations,
@@ -49,14 +49,14 @@ class BaseNameOriginRepository(ABC):
     @abstractmethod
     async def get_name_origins_probability(
         self, name: str
-    ) -> set[BaseNameEntity] | None:
+    ) -> list[BaseNameEntity] | None:
         """Calculate and retrieve the probability information for a given name.
 
         Args:
             name (str): The name to calculate probability for.
 
         Returns:
-            NameEntity | None: The NameEntity object containing probability information if found,
+            list[NameEntity] | None: A list of NameEntity objects containing probability information if found,
                              None otherwise.
         """
         ...

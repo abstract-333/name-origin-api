@@ -13,9 +13,7 @@ from logic.exceptions.name import NameNotFoundException
 from logic.exceptions.country import CountryNotFoundException
 from application.v1.name.schemas import NameOriginsOutSchema
 from application.v1.exceptions.schemas import (
-    NameErrorResponseSchema,
-    CountryErrorResponseSchema,
-    ValidationErrorResponseSchema,
+    ErrorResponseSchema,
 )
 
 
@@ -28,12 +26,33 @@ router = APIRouter(tags=['Name'], prefix='/names')
     response_model=list[NameOriginsOutSchema],
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            'model': ValidationErrorResponseSchema,
+            'model': ErrorResponseSchema,
             'description': 'Invalid request parameters',
+            'content': {
+                'application/json': {
+                    'example': {
+                        'detail': {
+                            'error': 'Name parameter is required',
+                        },
+                    },
+                },
+            },
         },
         status.HTTP_404_NOT_FOUND: {
-            'model': NameErrorResponseSchema | CountryErrorResponseSchema,
+            'model': ErrorResponseSchema,
             'description': 'Name or country not found',
+            'content': {
+                'application/json': {
+                    'example': {
+                        'detail': {
+                            'error': [
+                                'Country information not found for /name/',
+                                'Name /name/ not found',
+                            ],
+                        },
+                    },
+                },
+            },
         },
     },
 )
@@ -55,10 +74,9 @@ async def get_name_origins_handler(
     if not name:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ValidationErrorResponseSchema(
-                error='Name parameter is required',
-                field='name',
-            ).model_dump(),
+            detail={
+                'error': 'Name parameter is required',
+            },
         )
 
     mediator: Mediator = container.resolve(Mediator)
@@ -71,20 +89,20 @@ async def get_name_origins_handler(
             NameOriginsOutSchema.from_entity(name_origin_entity)
             for name_origin_entity in name_origins
         ]
-        return sorted(results, key=lambda x: x.probability, reverse=True)
+        return results
+
     except NameNotFoundException as exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=NameErrorResponseSchema(
-                error=f"Name '{name}' not found",
-                name=name,
-            ).model_dump(),
+            detail={
+                'error': f"Name '{name}' not found",
+            },
         ) from exception
+
     except CountryNotFoundException as exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=CountryErrorResponseSchema(
-                error=f"Country information not found for name '{name}'",
-                country_code=exception.iso_alpha2_code,
-            ).model_dump(),
+            detail={
+                'error': f"Country information not found for name '{name}'",
+            },
         ) from exception
