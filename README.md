@@ -117,41 +117,6 @@ That's it! You're ready to use the application.
 - Git
 - GNU Make
 
-### Environment Variables
-
-The project includes example environment files with all required variables:
-
-1. For development:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. For production:
-   ```bash
-   cp .env.prod.example .env.prod
-   ```
-
-All necessary environment variables are pre-configured in these example files.
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/name-origin-api.git
-   cd name-origin-api
-   ```
-
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   uv pip install -e .
-   ```
-
 ### Development
 
 The project uses Make commands for common development tasks:
