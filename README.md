@@ -189,7 +189,7 @@ Once the server is running, access the API documentation at:
    - Returns the top 5 most frequent names associated with a country
    - Uses country code (e.g., "US", "UA")
 
-## 🔄 CI/CD Pipeline
+## 🔄 CI Pipeline——Without CD ):
 
 The project uses GitHub Actions for continuous integration:
 
