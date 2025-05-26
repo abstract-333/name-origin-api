@@ -87,11 +87,16 @@ To start using the application, you only need:
    With Make:
    ```bash
    make all
+   make migrations
    ```
 
    Or directly with Docker Compose:
    ```bash
+   # Start the application
    docker compose --profile dev -f docker_compose/storages.yaml -f docker_compose/app.yaml --env-file .env up --build -d
+   
+   # Run migrations
+   docker exec -t main-app alembic upgrade head
    ```
 
 4. Start exploring the API at:
