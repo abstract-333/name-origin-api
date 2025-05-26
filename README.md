@@ -73,6 +73,33 @@ app/
 
 ## 🚀 Getting Started
 
+### Quick Start
+
+To start using the application, you only need:
+1. Docker and Docker Compose installed
+2. Copy the environment files:
+   ```bash
+   cp .env.example .env
+   cp .env.prod.example .env.prod
+   ```
+3. Start the application using either:
+
+   With Make:
+   ```bash
+   make all
+   ```
+
+   Or directly with Docker Compose:
+   ```bash
+   docker compose --profile dev -f docker_compose/storages.yaml -f docker_compose/app.yaml --env-file .env up --build -d
+   ```
+
+4. Start exploring the API at:
+   - Swagger UI: `http://localhost:8000/api/docs`
+   - ReDoc: `http://localhost:8000/api/redoc`
+
+That's it! You're ready to use the application.
+
 ### Prerequisites
 
 - Python 3.13 or higher
