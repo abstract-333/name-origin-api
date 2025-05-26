@@ -77,12 +77,17 @@ app/
 
 To start using the application, you only need:
 1. Docker and Docker Compose installed
-2. Copy the environment files:
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/name-origin-api.git
+   cd name-origin-api
+   ```
+3. Copy the environment files:
    ```bash
    cp .env.example .env
    cp .env.prod.example .env.prod
    ```
-3. Start the application using either:
+4. Start the application using either:
 
    With Make:
    ```bash
@@ -99,7 +104,7 @@ To start using the application, you only need:
    docker exec -t main-app alembic upgrade head
    ```
 
-4. Start exploring the API at:
+5. Start exploring the API at:
    - Swagger UI: `http://localhost:8000/api/docs`
    - ReDoc: `http://localhost:8000/api/redoc`
 
