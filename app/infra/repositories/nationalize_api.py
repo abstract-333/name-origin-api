@@ -1,17 +1,18 @@
+from dataclasses import dataclass
 import httpx
 from domain.entities.name import NameStrEntity, BaseNameEntity
 from domain.values.name import Name, Probability, CountOfRequests
 from infra.repositories.base import BaseNameOriginRepository
 
 
+@dataclass
 class NationalizeRepository(BaseNameOriginRepository):
     """Implementation of BaseNameRepository using the Nationalize API.
 
     This repository fetches name nationality probability data from https://api.nationalize.io/
     """
 
-    def __init__(self) -> None:
-        self.base_url = 'https://api.nationalize.io'
+    base_url: str
 
     async def get_name_origins_probability(
         self, name: str

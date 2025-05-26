@@ -76,7 +76,7 @@ class CountryEntity:
             str: Formatted coordinates as "lat,long" or empty string if coordinates are not available
         """
         if self.capital_lat is not None and self.capital_long is not None:
-            return f"{self.capital_lat},{self.capital_long}"
+            return f'{self.capital_lat},{self.capital_long}'
         return ''
 
     @property
@@ -86,7 +86,7 @@ class CountryEntity:
         Returns:
             str: Region and sub-region in format "Region,Sub-region"
         """
-        return f"{self.region},{self.sub_region}"
+        return f'{self.region},{self.sub_region}'
 
     @property
     def borders_str(self) -> str:

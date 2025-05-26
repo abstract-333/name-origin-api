@@ -1,17 +1,18 @@
+from dataclasses import dataclass
 from typing import Any
 import httpx
 from domain.entities.country import CountryEntity
 from infra.repositories.base import BaseCountryRepository
 
 
+@dataclass
 class CountriesAPIRepository(BaseCountryRepository):
     """Implementation of BaseCountryRepository using the REST Countries API.
 
     This repository fetches country data from https://restcountries.com/v3.1/
     """
 
-    def __init__(self) -> None:
-        self.base_url = 'https://restcountries.com/v3.1'
+    base_url: str
 
     async def get_list_of_countries(self) -> set[CountryEntity]:
         """Fetch all countries from the REST Countries API.

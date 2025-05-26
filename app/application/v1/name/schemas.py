@@ -35,7 +35,9 @@ class CountryOutSchema(BaseModel):
 class NameOriginsOutSchema(BaseModel):
     name: str = Field(..., description='The name being queried')
     count_of_requests: int = Field(..., description='Number of requests for this name')
-    last_accessed: datetime | None = Field(None, description='Last time the name was accessed')
+    last_accessed: datetime | None = Field(
+        None, description='Last time the name was accessed'
+    )
     probability: float = Field(
         ..., description='Probability of the name being from this country'
     )
@@ -44,12 +46,16 @@ class NameOriginsOutSchema(BaseModel):
         ...,
         description="Comma-separated list of country code and names (e.g., 'CA,Canada,Canada')",
     )
-    region: str = Field(..., description='Region and sub-region in format "Region,Sub-region"')
+    region: str = Field(
+        ..., description='Region and sub-region in format "Region,Sub-region"'
+    )
     independent: bool | None = Field(
         ..., description='Whether the country is independent'
     )
     capital: str | None = Field(..., description='Capital city name')
-    capital_coordinates: str = Field(..., description='Capital coordinates in format "lat,long"')
+    capital_coordinates: str = Field(
+        ..., description='Capital coordinates in format "lat,long"'
+    )
     flag_png: str = Field(..., description='URL to PNG flag image')
     flag_svg: str = Field(..., description='URL to SVG flag image')
     flag_alt: str | None = Field(..., description='Alt text for the flag')
@@ -69,7 +75,9 @@ class NameOriginsOutSchema(BaseModel):
         return cls(
             name=name_origin.name.as_generic_type(),
             count_of_requests=name_origin.count_of_requests.as_generic_type(),
-            last_accessed=name_origin.last_accessed if hasattr(name_origin, 'last_accessed') else None,
+            last_accessed=name_origin.last_accessed
+            if hasattr(name_origin, 'last_accessed')
+            else None,
             probability=name_origin.probability.as_generic_type(),
             country=name_origin.country.country_name,
             region=name_origin.country.region_full,

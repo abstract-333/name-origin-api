@@ -42,13 +42,13 @@ async def get_name_origins_handler(
     container: Container = Depends(dependency=init_container),
 ) -> list[NameOriginsOutSchema]:
     """Get name origins with country information.
-    
+
     Args:
         name: The name to get origins for
-        
+
     Returns:
         List of name origins with country information, sorted by probability in descending order
-        
+
     Raises:
         HTTPException: If the name parameter is missing or if the name/country is not found
     """

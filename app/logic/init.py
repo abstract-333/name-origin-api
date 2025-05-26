@@ -9,6 +9,7 @@ from infra.repositories.countries_api import CountriesAPIRepository
 from infra.repositories.nationalize_api import NationalizeRepository
 from logic.commands.name import GetNameOriginsCommand, GetNameOriginsCommandHandler
 from logic.mediator import Mediator
+from settings.config import Config
 
 
 @lru_cache(1)
@@ -19,11 +20,14 @@ def init_container():
 def _init_container() -> Container:
     container = Container()
 
+    container.register(Config, instance=Config(), scope=Scope.singleton)
+    config: Config = container.resolve(Config)
+
     def init_nationalize_name_repository() -> BaseNameOriginRepository:
-        return NationalizeRepository()
+        return NationalizeRepository(base_url=config.nationalize_api_url)
 
     def init_countries_api_repository() -> BaseCountryRepository:
-        return CountriesAPIRepository()
+        return CountriesAPIRepository(base_url=config.rest_countries_api_url)
 
     container.register(
         BaseNameOriginRepository,

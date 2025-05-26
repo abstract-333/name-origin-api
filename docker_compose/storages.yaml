@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17.4-alpine3.21
+    container_name: postgresql-db
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ../.env
+    networks:
+      - storages
+
+volumes:
+  postgres_data:
+
+networks:
+  storages:
+    driver: bridge
