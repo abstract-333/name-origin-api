@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import TYPE_CHECKING
 from sqlalchemy import String, Float, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -21,19 +21,11 @@ class NameOriginModel(Base):
     country_code: Mapped[str] = mapped_column(
         String(2), ForeignKey('countries.iso_alpha2_code')
     )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+    updated_at: Mapped[datetime] = mapped_column(DateTime)
 
     # Relationships
-    country: Mapped['CountryModel'] = relationship(
-        'CountryModel', back_populates='names'
-    )
+    country: Mapped['CountryModel'] = relationship(back_populates='names')
 
     def __repr__(self) -> str:
         return f'<NameModel(name={self.name}, country={self.country_code}, probability={self.probability})>'

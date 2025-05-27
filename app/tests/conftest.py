@@ -1,7 +1,10 @@
 from punq import Container
 from pytest import fixture
 
-from infra.repositories.base import BaseNameOriginAPIRepository, BaseCountryAPIRepository
+from infra.repositories.api.base import (
+    BaseNameOriginAPIRepository,
+    BaseCountryAPIRepository,
+)
 from logic.mediator import Mediator
 from tests.fixtures import init_dummy_container
 

@@ -15,6 +15,7 @@ class BaseNameEntity:
         count_of_requests: Number of represented rows of the name
         last_accessed: UTC timestamp of the last request
         probability: Probability score for the name's country association
+        updated_at: UTC timestamp of the last update
     """
 
     id: UUID = field(
@@ -31,6 +32,10 @@ class BaseNameEntity:
         kw_only=True,
     )
     probability: Probability = field(
+        kw_only=True,
+    )
+    updated_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC),
         kw_only=True,
     )
 

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, override
 import httpx
 from domain.entities.country import CountryEntity
-from infra.repositories.base import BaseCountryAPIRepository
+from infra.repositories.api.base import BaseCountryAPIRepository
 
 
 @dataclass

@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Protocol, TypeVar
 
 ModelT = TypeVar('ModelT')
@@ -38,3 +39,31 @@ class BaseConverter(Protocol[ModelT, EntityT]):
             ModelT: The converted database model.
         """
         ...
+
+
+def to_db_datetime(dt: datetime) -> datetime:
+    """Convert timezone-aware datetime to timezone-naive datetime for database storage.
+
+    Args:
+        dt: Timezone-aware datetime object
+
+    Returns:
+        Timezone-naive datetime object
+    """
+    if dt.tzinfo is not None:
+        return dt.replace(tzinfo=None)
+    return dt
+
+
+def from_db_datetime(dt: datetime) -> datetime:
+    """Convert timezone-naive datetime from database to timezone-aware datetime.
+
+    Args:
+        dt: Timezone-naive datetime object from database
+
+    Returns:
+        Timezone-aware datetime object with UTC timezone
+    """
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt

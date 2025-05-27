@@ -25,6 +25,7 @@ class CountryEntity:
         coat_of_arms_svg: URL to the country's coat of arms in SVG format (optional)
         borders: Set of ISO alpha-2 codes representing bordering countries (e.g., {'US', 'CA'}), it could be island
         created_at: Timestamp of entity creation
+        updated_at: Timestamp of entity update
     """
 
     iso_alpha2_code: str
@@ -47,6 +48,9 @@ class CountryEntity:
         default_factory=set,
     )
     created_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC),
+    )
+    updated_at: datetime = field(
         default_factory=lambda: datetime.now(UTC),
     )
 

@@ -1,6 +1,6 @@
 import pytest
 from domain.entities.name import NameStrEntity
-from infra.repositories.base import BaseNameOriginAPIRepository
+from infra.repositories.api.base import BaseNameOriginAPIRepository
 
 
 @pytest.mark.asyncio

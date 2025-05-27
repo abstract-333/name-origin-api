@@ -1,13 +1,22 @@
 from functools import lru_cache
 from collections.abc import Container
+
 from punq import (
     Container,
     Scope,
 )
-from infra.repositories.base import BaseCountryAPIRepository, BaseNameOriginAPIRepository
-from infra.repositories.countries_api import CountriesAPIRepository
-from infra.repositories.nationalize_api import NationalizeRepository
-from infra.repositories.session_generator import SessionGenerator
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from infra.repositories.api.base import (
+    BaseCountryAPIRepository,
+    BaseNameOriginAPIRepository,
+)
+from infra.repositories.api.countries_api import CountriesAPIRepository
+from infra.repositories.api.nationalize_api import NationalizeRepository
+from infra.repositories.sql.base import BaseCountryRepository
+from infra.repositories.sql.country import CountrySQLAlchemyRepository
+from infra.repositories.sql.session_generator import SessionGenerator
+from infra.repositories.sql.unit_of_work import UnitOfWork, IUnitOfWork
 from logic.commands.name import GetNameOriginsCommand, GetNameOriginsCommandHandler
 from logic.mediator import Mediator
 from settings.config import Config
@@ -24,24 +33,41 @@ def _init_container() -> Container:
     container.register(Config, instance=Config(), scope=Scope.singleton)
     config: Config = container.resolve(Config)
 
-    def create_async_session() -> SessionGenerator:
+    def create_session_maker() -> async_sessionmaker[AsyncSession]:
         return SessionGenerator(
             db_url=config.postgres_url,
             debug=config.debug,
-        )
-    
+        )._session_maker
+
     container.register(
-        SessionGenerator,
-        factory=create_async_session,
+        async_sessionmaker[AsyncSession],
+        factory=create_session_maker,
         scope=Scope.singleton,
     )
-    session = container.resolve(SessionGenerator)
-    
+    session_maker = container.resolve(async_sessionmaker[AsyncSession])
+
+    def init_unit_of_work() -> IUnitOfWork:
+        return UnitOfWork(
+            session_generator=SessionGenerator(
+                db_url=config.postgres_url,
+                debug=config.debug,
+            ),
+        )
+
+    container.register(
+        IUnitOfWork,
+        factory=init_unit_of_work,
+        scope=Scope.singleton,
+    )
+
     def init_nationalize_name_repository() -> BaseNameOriginAPIRepository:
         return NationalizeRepository(base_url=config.nationalize_api_url)
 
     def init_countries_api_repository() -> BaseCountryAPIRepository:
         return CountriesAPIRepository(base_url=config.rest_countries_api_url)
+
+    def init_country_sqlalchemy_repository() -> BaseCountryRepository:
+        return CountrySQLAlchemyRepository(session=session_maker())
 
     container.register(
         BaseNameOriginAPIRepository,
@@ -53,6 +79,12 @@ def _init_container() -> Container:
         factory=init_countries_api_repository,
         scope=Scope.singleton,
     )
+    container.register(
+        BaseCountryRepository,
+        factory=init_country_sqlalchemy_repository,
+        scope=Scope.singleton,
+    )
+
     container.register(GetNameOriginsCommandHandler)
 
     def init_mediator() -> Mediator:

@@ -1,7 +1,5 @@
-from datetime import UTC
-
 from domain.entities.country import CountryEntity
-from infra.converters.base import BaseConverter
+from infra.converters.base import BaseConverter, from_db_datetime, to_db_datetime
 from infra.models.country import CountryModel
 
 
@@ -34,7 +32,8 @@ class CountryConverter(BaseConverter[CountryModel, CountryEntity]):
             coat_of_arms_png=model.coat_of_arms_png,
             coat_of_arms_svg=model.coat_of_arms_svg,
             borders=set(model.borders.split(',')) if model.borders else set(),
-            created_at=model.created_at.replace(tzinfo=UTC),
+            created_at=from_db_datetime(model.created_at),
+            updated_at=from_db_datetime(model.updated_at),
         )
 
     @classmethod
@@ -63,4 +62,6 @@ class CountryConverter(BaseConverter[CountryModel, CountryEntity]):
             coat_of_arms_png=entity.coat_of_arms_png,
             coat_of_arms_svg=entity.coat_of_arms_svg,
             borders=','.join(sorted(entity.borders)) if entity.borders else None,
+            created_at=to_db_datetime(entity.created_at),
+            updated_at=to_db_datetime(entity.updated_at),
         )

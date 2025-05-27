@@ -3,7 +3,7 @@ from typing import override
 import httpx
 from domain.entities.name import NameStrEntity, BaseNameEntity
 from domain.values.name import Name, Probability, CountOfRequests
-from infra.repositories.base import BaseNameOriginAPIRepository
+from infra.repositories.api.base import BaseNameOriginAPIRepository
 
 
 @dataclass

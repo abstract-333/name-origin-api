@@ -89,3 +89,21 @@ migrations:
 .PHONY: migrations-prod
 migrations-prod:
 	${EXEC} ${PROD_CONTAINER} alembic upgrade head
+
+.PHONY: downgrade
+downgrade:
+	${EXEC} ${APP_CONTAINER} alembic downgrade -1
+
+.PHONY: downgrade-prod
+downgrade-prod:
+	${EXEC} ${PROD_CONTAINER} alembic downgrade -1
+
+.PHONY: create-migration
+create-migration:
+	@read -p "Enter migration name: " name; \
+	${EXEC} ${APP_CONTAINER} alembic revision --autogenerate -m "$$name"
+
+.PHONY: create-migration-prod
+create-migration-prod:
+	@read -p "Enter migration name: " name; \
+	${EXEC} ${PROD_CONTAINER} alembic revision --autogenerate -m "$$name"

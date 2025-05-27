@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 
-from domain.entities.country import CountryEntity
 from domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
-from infra.repositories.base import BaseCountryAPIRepository, BaseNameOriginAPIRepository
+from infra.repositories.api.base import (
+    BaseCountryAPIRepository,
+    BaseNameOriginAPIRepository,
+)
+from infra.repositories.sql.base import BaseCountryRepository
+from infra.repositories.sql.unit_of_work import IUnitOfWork
 from logic.commands.base import BaseCommand, CommandHandler
 from logic.exceptions.country import CountryNotFoundException
 from logic.exceptions.name import NameNotFoundException
@@ -17,13 +21,17 @@ class GetNameOriginsCommand(BaseCommand):
 class GetNameOriginsCommandHandler(
     CommandHandler[GetNameOriginsCommand, list[NameEntity]]
 ):
-    name_origin_repository: BaseNameOriginAPIRepository
-    country_repository: BaseCountryAPIRepository
+    name_origin_api_repository: BaseNameOriginAPIRepository
+    country_api_repository: BaseCountryAPIRepository
+    country_sql_repository: BaseCountryRepository
+    unit_of_work: IUnitOfWork
 
     async def handle(self, command: GetNameOriginsCommand) -> list[NameEntity]:
         name_origin: (
             list[BaseNameEntity] | None
-        ) = await self.name_origin_repository.get_name_origins_probability(command.name)
+        ) = await self.name_origin_api_repository.get_name_origins_probability(
+            command.name
+        )
         if not name_origin:
             raise NameNotFoundException(name=command.name)
 
@@ -33,13 +41,24 @@ class GetNameOriginsCommandHandler(
             if not isinstance(name_str_entity, NameStrEntity):
                 continue
 
-            country_info: (
-                CountryEntity | None
-            ) = await self.country_repository.get_country(name_str_entity.country_name)
+            # Try SQL repository first
+            country_info = await self.country_sql_repository.get_country(
+                name_str_entity.country_name
+            )
+
+            # If not found in SQL, try API and cache the result
             if not country_info:
-                raise CountryNotFoundException(
-                    iso_alpha2_code=name_str_entity.country_name
+                country_info = await self.country_api_repository.get_country(
+                    name_str_entity.country_name
                 )
+                if not country_info:
+                    raise CountryNotFoundException(
+                        iso_alpha2_code=name_str_entity.country_name
+                    )
+                async with self.unit_of_work as uow:
+                    # Cache the country in SQL repository
+                    await self.country_sql_repository.add_country(country_info)
+                    await uow.save()
 
             name_entity = NameEntity(
                 name=name_str_entity.name,
@@ -48,4 +67,8 @@ class GetNameOriginsCommandHandler(
                 country=country_info,
             )
             name_origins_with_country_entity.append(name_entity)
-        return sorted(name_origins_with_country_entity, key=lambda x: x.probability.as_generic_type(), reverse=True)
+        return sorted(
+            name_origins_with_country_entity,
+            key=lambda x: x.probability.as_generic_type(),
+            reverse=True,
+        )
