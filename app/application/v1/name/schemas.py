@@ -75,7 +75,7 @@ class NameOriginsOutSchema(BaseModel):
         return cls(
             name=name_origin.name.as_generic_type(),
             count_of_requests=name_origin.count_of_requests.as_generic_type(),
-            last_accessed=name_origin.last_accessed
+            last_accessed=name_origin.last_accessed_at
             if hasattr(name_origin, 'last_accessed')
             else None,
             probability=name_origin.probability.as_generic_type(),

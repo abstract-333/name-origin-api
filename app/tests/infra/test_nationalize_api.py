@@ -7,7 +7,7 @@ from infra.repositories.api.base import BaseNameOriginAPIRepository
 async def test_get_name_probability_success(
     name_origin_repository: BaseNameOriginAPIRepository,
 ) -> None:
-    results = await name_origin_repository.get_name_origins_probability('mark')
+    results = await name_origin_repository.get_name_origins('mark')
 
     assert isinstance(results, list)
     assert len(results) > 0
@@ -24,6 +24,6 @@ async def test_get_name_probability_success(
 async def test_get_name_probability_not_found(
     name_origin_repository: BaseNameOriginAPIRepository,
 ) -> None:
-    assert not await name_origin_repository.get_name_origins_probability(
+    assert not await name_origin_repository.get_name_origins(
         'Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokai'
     )

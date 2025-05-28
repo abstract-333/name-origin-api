@@ -1,6 +1,6 @@
 from domain.entities.name import NameEntity
 from domain.values.name import CountOfRequests, Name, Probability
-from infra.converters.base import BaseConverter
+from infra.converters.base import BaseConverter, from_db_datetime, to_db_datetime
 from infra.converters.country import CountryConverter
 from infra.models.name import NameOriginModel
 
@@ -23,6 +23,8 @@ class NameConverter(BaseConverter[NameOriginModel, NameEntity]):
             count_of_requests=CountOfRequests(value=model.count_of_requests),
             probability=Probability(value=model.probability),
             country=CountryConverter.to_entity(model.country),
+            created_at=from_db_datetime(model.created_at),
+            updated_at=from_db_datetime(model.updated_at),
         )
 
     @classmethod
@@ -40,4 +42,7 @@ class NameConverter(BaseConverter[NameOriginModel, NameEntity]):
             probability=entity.probability.as_generic_type(),
             count_of_requests=entity.count_of_requests.as_generic_type(),
             country_code=entity.country.iso_alpha2_code,
+            created_at=to_db_datetime(entity.created_at),
+            updated_at=to_db_datetime(entity.updated_at),
+            last_accessed_at=to_db_datetime(entity.last_accessed_at),
         )

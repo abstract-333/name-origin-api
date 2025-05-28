@@ -27,7 +27,7 @@ class BaseNameEntity:
     count_of_requests: CountOfRequests = field(
         kw_only=True,
     )
-    last_accessed: datetime = field(
+    last_accessed_at: datetime = field(
         default_factory=lambda: datetime.now(UTC),
         kw_only=True,
     )
@@ -35,6 +35,10 @@ class BaseNameEntity:
         kw_only=True,
     )
     updated_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC),
+        kw_only=True,
+    )
+    created_at: datetime = field(
         default_factory=lambda: datetime.now(UTC),
         kw_only=True,
     )

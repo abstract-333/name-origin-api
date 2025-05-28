@@ -21,7 +21,7 @@ from logic.commands.country import (
     FetchAndSaveCountriesCommand,
     FetchAndSaveCountriesCommandHandler,
 )
-from logic.commands.name import GetNameOriginsCommand, GetNameOriginsCommandHandler
+from logic.commands.name import GetFrequentNamesCountryCommand, GetFrequentNamesCountryCommandHandler, GetNameOriginsCommand, GetNameOriginsCommandHandler
 from logic.mediator import Mediator
 from settings.config import Config
 
@@ -49,6 +49,7 @@ def _init_container() -> Container:
         scope=Scope.singleton,
     )
     session_maker = container.resolve(async_sessionmaker[AsyncSession])
+
     def init_unit_of_work() -> IUnitOfWork:
         return UnitOfWork(
             session_factory=session_maker,
@@ -78,6 +79,7 @@ def _init_container() -> Container:
     )
     container.register(GetNameOriginsCommandHandler)
     container.register(FetchAndSaveCountriesCommandHandler)
+    container.register(GetFrequentNamesCountryCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -88,6 +90,10 @@ def _init_container() -> Container:
         mediator.register_command(
             FetchAndSaveCountriesCommand,
             [container.resolve(FetchAndSaveCountriesCommandHandler)],
+        )
+        mediator.register_command(
+            GetFrequentNamesCountryCommand,
+            [container.resolve(GetFrequentNamesCountryCommandHandler)],
         )
         return mediator
 

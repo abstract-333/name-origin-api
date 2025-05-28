@@ -1,8 +1,8 @@
-"""add names_origins and countries tables
+"""add names and countries tables
 
-Revision ID: 20250527_13_15_53
+Revision ID: 20250528_18_06_16
 Revises:
-Create Date: 2025-05-27 13:15:53.453755
+Create Date: 2025-05-28 18:06:16.176388
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '20250527_13_15_53'
+revision: str = '20250528_18_06_16'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -52,6 +52,7 @@ def upgrade() -> None:
         sa.Column('country_code', sa.String(length=2), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False),
+        sa.Column('last_accessed_at', sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ['country_code'],
             ['countries.iso_alpha2_code'],

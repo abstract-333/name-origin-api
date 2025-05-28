@@ -5,7 +5,7 @@ from abc import (
 from dataclasses import dataclass
 
 from domain.entities.country import CountryEntity
-from domain.entities.name import BaseNameEntity
+from domain.entities.name import NameStrEntity
 
 
 @dataclass
@@ -47,16 +47,14 @@ class BaseNameOriginAPIRepository(ABC):
     """
 
     @abstractmethod
-    async def get_name_origins_probability(
-        self, name: str
-    ) -> list[BaseNameEntity] | None:
+    async def get_name_origins(self, name: str) -> list[NameStrEntity] | None:
         """Calculate and retrieve the probability information for a given name.
 
         Args:
             name (str): The name to calculate probability for.
 
         Returns:
-            list[NameEntity] | None: A list of NameEntity objects containing probability information if found,
+            list[NameStrEntity] | None: A list of NameEntity objects containing probability information if found,
                              None otherwise.
         """
         ...
