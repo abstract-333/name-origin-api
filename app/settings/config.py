@@ -32,16 +32,13 @@ class Config(BaseSettings):
         Returns:
             str: PostgreSQL connection URL
         """
-        return (
-            str(
-                PostgresDsn.build(
-                    scheme='postgresql+asyncpg',
-                    username=self.postgres_user,
-                    password=self.postgres_password,
-                    host=self.postgres_host,
-                    port=5432,
-                    path=self.postgres_db,
-                )
+        return str(
+            PostgresDsn.build(
+                scheme='postgresql+asyncpg',
+                username=self.postgres_user,
+                password=self.postgres_password,
+                host=self.postgres_host,
+                port=5432,
+                path=self.postgres_db,
             )
-            + '?async_fallback=True'
         )

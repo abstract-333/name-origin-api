@@ -1,80 +1,45 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Self, override
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from infra.repositories.sql.session_generator import SessionGenerator
-
+from infra.repositories.sql.base import BaseCountryRepository
+from infra.repositories.sql.country import CountrySQLAlchemyRepository
 
 @dataclass
 class IUnitOfWork(ABC):
-    @property
-    @abstractmethod
-    def session(self) -> AsyncSession: ...
+    country: BaseCountryRepository
 
     @abstractmethod
-    async def __aenter__(self) -> Self: ...
+    async def __aenter__(self): ...
 
     @abstractmethod
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: object | None,
-    ) -> None: ...
+    async def __aexit__(self, *args): ...
 
     @abstractmethod
-    async def save(self) -> None: ...
+    async def commit(self): ...
 
     @abstractmethod
-    async def rollback(self) -> None: ...
-
-    @abstractmethod
-    async def close(self) -> None: ...
+    async def rollback(self): ...
 
 
-@dataclass
+@dataclass(kw_only=True)
 class UnitOfWork(IUnitOfWork):
-    session_generator: SessionGenerator
+    session_factory: async_sessionmaker[AsyncSession]
     _session: AsyncSession | None = None
+    country: BaseCountryRepository | None = None
 
-    @property
-    @override
-    def session(self) -> AsyncSession:
-        if not self._session:
-            raise RuntimeError('Session not initialized. Use async context manager.')
-        return self._session
+    async def __aenter__(self) -> None:
+        self._session = self.session_factory()
 
-    @override
-    async def __aenter__(self) -> Self:
-        self._session = await self.session_generator.get_session().__anext__()
-        return self
+        self.country = CountrySQLAlchemyRepository(session=self._session)
 
-    @override
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: object | None,
-    ) -> None:
-        if exc_type is not None:
-            await self.rollback()
-        await self.close()
+    async def __aexit__(self, *args) -> None:
+        await self.rollback()
+        await self._session.close()
 
-    @override
-    async def save(self) -> None:
-        """Save all changes to the database."""
-        await self.session.commit()
+    async def commit(self) -> None:
+        await self._session.commit()
 
-    @override
     async def rollback(self) -> None:
-        """Rollback all changes."""
-        await self.session.rollback()
-
-    @override
-    async def close(self) -> None:
-        """Close the database session."""
-        if self._session:
-            await self._session.close()
-            self._session = None
+        await self._session.rollback()

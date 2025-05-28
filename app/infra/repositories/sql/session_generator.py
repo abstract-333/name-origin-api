@@ -1,19 +1,29 @@
-from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+    async_sessionmaker,
+    AsyncEngine,
+)
 
 
 @dataclass
-class SessionGenerator:
-    def __init__(self, db_url: str, debug: bool):
-        self._engine = create_async_engine(
-            url=db_url, echo=debug, pool_size=20, max_overflow=0, future=True
-        )
-        self._session_maker = async_sessionmaker(
-            self._engine, expire_on_commit=False, class_=AsyncSession
-        )
+class AsyncSessionFactory:
+    _async_engine = None
+    _async_session_maker = None
+    url: str
+    debug: bool
 
-    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
-        async with self._session_maker() as session:
-            yield session
+    def _create_instance(self) -> async_sessionmaker[AsyncSession]:
+        self._async_engine: AsyncEngine = create_async_engine(
+            url=self.url, echo=self.debug, pool_size=20, max_overflow=0
+        )
+        self._async_session_maker = async_sessionmaker(
+            self._async_engine, expire_on_commit=False
+        )
+        return self._async_session_maker
+
+    def get_async_session_maker(self) -> async_sessionmaker[AsyncSession]:
+        self._create_instance()
+        return self._async_session_maker

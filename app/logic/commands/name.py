@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
+from domain.entities.country import CountryEntity
 from domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
 from infra.repositories.api.base import (
     BaseCountryAPIRepository,
     BaseNameOriginAPIRepository,
 )
-from infra.repositories.sql.base import BaseCountryRepository
 from infra.repositories.sql.unit_of_work import IUnitOfWork
 from logic.commands.base import BaseCommand, CommandHandler
 from logic.exceptions.country import CountryNotFoundException
@@ -23,7 +23,6 @@ class GetNameOriginsCommandHandler(
 ):
     name_origin_api_repository: BaseNameOriginAPIRepository
     country_api_repository: BaseCountryAPIRepository
-    country_sql_repository: BaseCountryRepository
     unit_of_work: IUnitOfWork
 
     async def handle(self, command: GetNameOriginsCommand) -> list[NameEntity]:
@@ -40,25 +39,26 @@ class GetNameOriginsCommandHandler(
         for name_str_entity in name_origin:
             if not isinstance(name_str_entity, NameStrEntity):
                 continue
-
+            country_info:  CountryEntity | None
+            async with self.unit_of_work:
             # Try SQL repository first
-            country_info = await self.country_sql_repository.get_country(
+                country_info = await self.unit_of_work.country.get_country(
                 name_str_entity.country_name
             )
 
             # If not found in SQL, try API and cache the result
-            if not country_info:
-                country_info = await self.country_api_repository.get_country(
-                    name_str_entity.country_name
-                )
+            async with self.unit_of_work:
                 if not country_info:
-                    raise CountryNotFoundException(
-                        iso_alpha2_code=name_str_entity.country_name
+                    country_info = await self.country_api_repository.get_country(
+                        name_str_entity.country_name
                     )
-                async with self.unit_of_work as uow:
+                    if not country_info:
+                        raise CountryNotFoundException(
+                            iso_alpha2_code=name_str_entity.country_name
+                        )
                     # Cache the country in SQL repository
-                    await self.country_sql_repository.add_country(country_info)
-                    await uow.save()
+                    await self.unit_of_work.country.add_country(country_info)
+                    await self.unit_of_work.commit()
 
             name_entity = NameEntity(
                 name=name_str_entity.name,

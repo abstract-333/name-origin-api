@@ -23,6 +23,7 @@ class NameOriginModel(Base):
     )
     created_at: Mapped[datetime] = mapped_column(DateTime)
     updated_at: Mapped[datetime] = mapped_column(DateTime)
+    last_accessed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     # Relationships
     country: Mapped['CountryModel'] = relationship(back_populates='names')

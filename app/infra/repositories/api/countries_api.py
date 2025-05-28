@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, override
 import httpx
+import time
 from domain.entities.country import CountryEntity
 from infra.repositories.api.base import BaseCountryAPIRepository
 
@@ -13,6 +14,12 @@ class CountriesAPIRepository(BaseCountryAPIRepository):
     """
 
     base_url: str
+    timeout: float = 5.0  # Default timeout of 5 seconds
+    client: httpx.AsyncClient = field(init=False)
+
+    def __post_init__(self):
+        timeout = httpx.Timeout(self.timeout, connect=2.0)
+        self.client = httpx.AsyncClient(timeout=timeout)
 
     @override
     async def get_list_of_countries(self) -> list[CountryEntity]:
@@ -21,14 +28,21 @@ class CountriesAPIRepository(BaseCountryAPIRepository):
         Returns:
             list[CountryEntity]: A list of CountryEntity objects representing all countries.
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(f'{self.base_url}/all')
+        start_time = time.time()
+        try:
+            response = await self.client.get(f'{self.base_url}/all')
             response.raise_for_status()
 
             countries_data = response.json()
+            duration = time.time() - start_time
+            print(f'GET {self.base_url}/all took {duration:.3f} seconds')
             return [
                 self._map_to_entity(country_data) for country_data in countries_data
             ]
+        except httpx.HTTPStatusError as e:
+            duration = time.time() - start_time
+            print(f'GET {self.base_url}/all failed after {duration:.3f} seconds')
+            raise e
 
     @override
     async def get_country(self, name: str) -> CountryEntity | None:
@@ -40,17 +54,23 @@ class CountriesAPIRepository(BaseCountryAPIRepository):
         Returns:
             CountryEntity | None: The CountryEntity object if found, None otherwise.
         """
+        start_time = time.time()
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(f'{self.base_url}/alpha/{name}')
-                response.raise_for_status()
+            response = await self.client.get(f'{self.base_url}/alpha/{name}')
+            response.raise_for_status()
 
-                countries_data = response.json()
-                if not countries_data:
-                    return None
+            countries_data = response.json()
+            duration = time.time() - start_time
+            print(f'GET {self.base_url}/alpha/{name} took {duration:.3f} seconds')
+            if not countries_data:
+                return None
 
-                return self._map_to_entity(countries_data[0])
+            return self._map_to_entity(countries_data[0])
         except httpx.HTTPStatusError as e:
+            duration = time.time() - start_time
+            print(
+                f'GET {self.base_url}/alpha/{name} failed after {duration:.3f} seconds'
+            )
             if e.response.status_code == 404:
                 return None
             raise

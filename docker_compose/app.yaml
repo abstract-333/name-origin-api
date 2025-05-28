@@ -23,6 +23,7 @@ services:
        - ../app/settings/:/app/settings/
        - ../app/tests/:/app/tests/
        - ../app/alembic/:/app/alembic/
+       - ../app/scripts/:/app/scripts/
        - ../app/alembic.ini:/app/alembic.ini
     networks:
       - storages

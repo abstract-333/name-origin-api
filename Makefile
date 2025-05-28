@@ -107,3 +107,12 @@ create-migration:
 create-migration-prod:
 	@read -p "Enter migration name: " name; \
 	${EXEC} ${PROD_CONTAINER} alembic revision --autogenerate -m "$$name"
+
+.PHONY: migrations-and-init
+migrations-and-init: migrations
+	${EXEC} ${APP_CONTAINER} python -c "from logic.init import init_container; container = init_container(); print('Container initialized successfully')"
+
+.PHONY: init-countries
+init-countries:
+	${EXEC} ${APP_CONTAINER} python -m scripts.init_countries
+

@@ -13,10 +13,14 @@ from infra.repositories.api.base import (
 )
 from infra.repositories.api.countries_api import CountriesAPIRepository
 from infra.repositories.api.nationalize_api import NationalizeRepository
-from infra.repositories.sql.base import BaseCountryRepository
-from infra.repositories.sql.country import CountrySQLAlchemyRepository
-from infra.repositories.sql.session_generator import SessionGenerator
+from infra.repositories.sql.session_generator import (
+    AsyncSessionFactory,
+)
 from infra.repositories.sql.unit_of_work import UnitOfWork, IUnitOfWork
+from logic.commands.country import (
+    FetchAndSaveCountriesCommand,
+    FetchAndSaveCountriesCommandHandler,
+)
 from logic.commands.name import GetNameOriginsCommand, GetNameOriginsCommandHandler
 from logic.mediator import Mediator
 from settings.config import Config
@@ -34,10 +38,10 @@ def _init_container() -> Container:
     config: Config = container.resolve(Config)
 
     def create_session_maker() -> async_sessionmaker[AsyncSession]:
-        return SessionGenerator(
-            db_url=config.postgres_url,
+        return AsyncSessionFactory(
+            url=config.postgres_url,
             debug=config.debug,
-        )._session_maker
+        ).get_async_session_maker()
 
     container.register(
         async_sessionmaker[AsyncSession],
@@ -45,13 +49,9 @@ def _init_container() -> Container:
         scope=Scope.singleton,
     )
     session_maker = container.resolve(async_sessionmaker[AsyncSession])
-
     def init_unit_of_work() -> IUnitOfWork:
         return UnitOfWork(
-            session_generator=SessionGenerator(
-                db_url=config.postgres_url,
-                debug=config.debug,
-            ),
+            session_factory=session_maker,
         )
 
     container.register(
@@ -66,9 +66,6 @@ def _init_container() -> Container:
     def init_countries_api_repository() -> BaseCountryAPIRepository:
         return CountriesAPIRepository(base_url=config.rest_countries_api_url)
 
-    def init_country_sqlalchemy_repository() -> BaseCountryRepository:
-        return CountrySQLAlchemyRepository(session=session_maker())
-
     container.register(
         BaseNameOriginAPIRepository,
         factory=init_nationalize_name_repository,
@@ -79,19 +76,18 @@ def _init_container() -> Container:
         factory=init_countries_api_repository,
         scope=Scope.singleton,
     )
-    container.register(
-        BaseCountryRepository,
-        factory=init_country_sqlalchemy_repository,
-        scope=Scope.singleton,
-    )
-
     container.register(GetNameOriginsCommandHandler)
+    container.register(FetchAndSaveCountriesCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
         mediator.register_command(
             GetNameOriginsCommand,
             [container.resolve(GetNameOriginsCommandHandler)],
+        )
+        mediator.register_command(
+            FetchAndSaveCountriesCommand,
+            [container.resolve(FetchAndSaveCountriesCommandHandler)],
         )
         return mediator
 
