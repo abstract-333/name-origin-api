@@ -24,7 +24,9 @@ class NameSQLAlchemyRepository(BaseNameRepository):
             [NameConverter().to_entity(model) for model in results] if results else None
         )
 
-    async def get_frequent_names_by_country(self, country_name: str) -> list[NameEntity] | None:
+    async def get_frequent_names_by_country(
+        self, country_name: str
+    ) -> list[NameEntity] | None:
         """Get top 5 most frequent names for a specific country.
 
         Args:
@@ -49,4 +51,14 @@ class NameSQLAlchemyRepository(BaseNameRepository):
     async def add_name_origin(self, name_origin: NameEntity) -> None:
         name_model = NameConverter().to_model(name_origin)
         self.session.add(name_model)
+        await self.session.flush()
+
+    async def update_name_origin(self, name_origin: NameEntity) -> None:
+        """Update the last accessed timestamp for a name origin.
+
+        Args:
+            name_origin (NameEntity): The name origin entity to update.
+        """
+        name_model = NameConverter().to_model(name_origin)
+        await self.session.merge(name_model)
         await self.session.flush()

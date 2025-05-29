@@ -21,7 +21,12 @@ from logic.commands.country import (
     FetchAndSaveCountriesCommand,
     FetchAndSaveCountriesCommandHandler,
 )
-from logic.commands.name import GetFrequentNamesCountryCommand, GetFrequentNamesCountryCommandHandler, GetNameOriginsCommand, GetNameOriginsCommandHandler
+from logic.commands.name import (
+    GetFrequentNamesCountryCommand,
+    GetFrequentNamesCountryCommandHandler,
+    GetNameOriginsCommand,
+    GetNameOriginsCommandHandler,
+)
 from logic.mediator import Mediator
 from settings.config import Config
 

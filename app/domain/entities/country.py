@@ -2,7 +2,7 @@ from dataclasses import (
     dataclass,
     field,
 )
-from datetime import datetime, UTC
+from datetime import datetime
 
 
 @dataclass(kw_only=True)
@@ -48,10 +48,10 @@ class CountryEntity:
         default_factory=set,
     )
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=datetime.now,
     )
     updated_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=datetime.now,
     )
 
     def __hash__(self) -> int:

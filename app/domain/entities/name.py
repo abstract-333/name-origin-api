@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime
 from uuid_utils import UUID, uuid7
 from domain.entities.country import CountryEntity
 from domain.values.name import CountOfRequests, Name, Probability
@@ -13,9 +13,9 @@ class BaseNameEntity:
         id: Unique identifier using UUID-7
         name: The name to be analyzed (max 100 characters)
         count_of_requests: Number of represented rows of the name
-        last_accessed: UTC timestamp of the last request
+        last_accessed: timestamp of the last request
         probability: Probability score for the name's country association
-        updated_at: UTC timestamp of the last update
+        updated_at: timestamp of the last update
     """
 
     id: UUID = field(
@@ -27,19 +27,19 @@ class BaseNameEntity:
     count_of_requests: CountOfRequests = field(
         kw_only=True,
     )
-    last_accessed_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC),
-        kw_only=True,
-    )
     probability: Probability = field(
         kw_only=True,
     )
+    last_accessed_at: datetime = field(
+        default_factory=datetime.now,
+        kw_only=True,
+    )
     updated_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=datetime.now,
         kw_only=True,
     )
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=datetime.now,
         kw_only=True,
     )
 

@@ -85,7 +85,9 @@ class BaseNameRepository(ABC):
         ...
 
     @abstractmethod
-    async def get_frequent_names_by_country(self, country_name: str) -> list[NameEntity] | None:
+    async def get_frequent_names_by_country(
+        self, country_name: str
+    ) -> list[NameEntity] | None:
         """Retrieve frequent names for a specific country.
 
         Args:
@@ -102,5 +104,14 @@ class BaseNameRepository(ABC):
 
         Args:
             name_origin (NameEntity): The name origin entity to add.
+        """
+        ...
+
+    @abstractmethod
+    async def update_name_origin(self, name_origin: NameEntity) -> None:
+        """Update an existing name origin in the repository.
+
+        Args:
+            name_origin (NameEntity): The name origin entity to update.
         """
         ...

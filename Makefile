@@ -116,3 +116,7 @@ migrations-and-init: migrations
 init-countries:
 	${EXEC} ${APP_CONTAINER} python -m scripts.init_countries
 
+.PHONY: init-countries-prod
+init-countries-prod:
+	${EXEC} ${PROD_CONTAINER} python -m scripts.init_countries
+

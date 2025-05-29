@@ -1,5 +1,3 @@
-from datetime import datetime, UTC
-
 from domain.entities.country import CountryEntity
 
 
@@ -43,8 +41,6 @@ def test_country_entity_creation() -> None:
         == 'https://mainfacts.com/media/images/coats_of_arms/us.svg'
     )
     assert country.borders == {'CAN', 'MEX'}
-    assert isinstance(country.created_at, datetime)
-    assert country.created_at.tzinfo == UTC
 
 
 def test_country_entity_optional_fields() -> None:

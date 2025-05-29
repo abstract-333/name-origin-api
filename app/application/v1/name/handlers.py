@@ -110,6 +110,7 @@ async def get_name_origins_handler(
     except Exception as exception:
         raise exception
 
+
 @router.get(
     path='/popular-names/',
     status_code=status.HTTP_200_OK,
@@ -173,11 +174,11 @@ async def get_popular_names_by_country_handler(
         )
         if not top_frequent_names:
             raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                'error': f'No names found for country {country}',
-            },
-        ) 
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={
+                    'error': f'No names found for country {country}',
+                },
+            )
         results = [
             NameOriginsOutSchema.from_entity(name_origin_entity)
             for name_origin_entity in top_frequent_names

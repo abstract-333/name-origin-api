@@ -1,4 +1,3 @@
-from datetime import datetime, UTC
 from domain.entities.name import BaseNameEntity, NameEntity, NameStrEntity
 from domain.entities.country import CountryEntity
 from domain.values.name import CountOfRequests, Name, Probability
@@ -19,8 +18,6 @@ def test_base_name_entity_creation() -> None:
     assert (
         name_entity.probability.as_generic_type() == Probability(0.85).as_generic_type()
     )
-    assert isinstance(name_entity.last_accessed_at, datetime)
-    assert name_entity.last_accessed_at.tzinfo == UTC
 
 
 def test_name_entity_creation() -> None:
@@ -56,8 +53,6 @@ def test_name_entity_creation() -> None:
     assert (
         name_entity.probability.as_generic_type() == Probability(0.85).as_generic_type()
     )
-    assert isinstance(name_entity.last_accessed_at, datetime)
-    assert name_entity.last_accessed_at.tzinfo == UTC
     assert name_entity.country == country
 
 
@@ -77,8 +72,6 @@ def test_name_str_entity_creation() -> None:
     assert (
         name_entity.probability.as_generic_type() == Probability(0.85).as_generic_type()
     )
-    assert isinstance(name_entity.last_accessed_at, datetime)
-    assert name_entity.last_accessed_at.tzinfo == UTC
     assert name_entity.country_name == 'United States'
 
 

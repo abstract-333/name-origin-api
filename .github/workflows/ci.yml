@@ -31,7 +31,6 @@ jobs:
         env:
           UV_SYSTEM_PYTHON: 1
 
-
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always
 
@@ -42,27 +41,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: "0.6.3"
-          enable-cache: true
-          cache-dependency-glob: |
-            pyproject.toml
-            uv.lock
-
-      - name: Install test dependencies
-        run: uv sync --group test
-
-      - name: Set environment variables
+      - name: Copy environment files
         run: |
-          cp .env.example .env  # Copy .env.example to .env if .env is not available
+          cp .env.example .env
           cat .env  # Verify the .env file content
 
-      - name: Test with pytest
-        run: uv run pytest
+      - name: Build and start containers
+        run: make all
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          timeout 30s bash -c 'until docker exec postgresql-db pg_isready -U postgres; do sleep 1; done'
+
+      - name: Run migrations
+        run: make migrations
+
+      - name: Run tests
+        run: make test
+
+      - name: Stop containers
+        if: always()
+        run: make all-down

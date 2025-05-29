@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from domain.entities.country import CountryEntity
 from domain.entities.name import NameEntity, NameStrEntity
@@ -26,11 +27,12 @@ class GetNameOriginsCommandHandler(
     uow: IUnitOfWork
 
     async def handle(self, command: GetNameOriginsCommand) -> list[NameEntity]:
-        name_origins: list[NameEntity] | None = await self._get_names_origins_db(
+        name_origins_sql: list[NameEntity] | None = await self._get_names_origins_db(
             command.name
         )
-        if name_origins:
-            return name_origins
+        if name_origins_sql and name_origins_sql[0].last_accessed_at and \
+        (datetime.now() - name_origins_sql[0].last_accessed_at) < timedelta(hours=1):
+            return name_origins_sql
 
         name_origins_from_api: (
             list[NameStrEntity] | None
@@ -62,7 +64,13 @@ class GetNameOriginsCommandHandler(
                 probability=name_str_entity.probability,
                 country=country_info,
             )
-            await self._save_name_to_db(name_entity=name_entity)
+            if name_origins_sql:
+                # If the row exists in db, we just updat the record
+                await self._update_name_db(name_entity=name_entity)
+            
+            else:
+                # If there is not records with this name, we add a new one
+                await self._save_name_to_db(name_entity=name_entity)
 
             name_origins_with_country_entity.append(name_entity)
 
@@ -92,6 +100,18 @@ class GetNameOriginsCommandHandler(
         """
         async with self.uow:
             await self.uow.name.add_name_origin(name_origin=name_entity)
+            await self.uow.commit()
+
+        return None
+    
+    async def _update_name_db(self, name_entity: NameEntity) -> None:
+        """Update name information in database.
+
+        Args:
+            name (NameEntity): The name entity to update.
+        """
+        async with self.uow:
+            await self.uow.name.update_name_origin(name_origin=name_entity)
             await self.uow.commit()
 
         return None
@@ -135,7 +155,11 @@ class GetFrequentNamesCountryCommandHandler(
 ):
     uow: IUnitOfWork
 
-    async def handle(self, command: GetFrequentNamesCountryCommand) -> list[NameEntity] | None:
+    async def handle(
+        self, command: GetFrequentNamesCountryCommand
+    ) -> list[NameEntity] | None:
         async with self.uow:
-            names:  list[NameEntity] | None = await self.uow.name.get_frequent_names_by_country(command.country_name) 
+            names: (
+                list[NameEntity] | None
+            ) = await self.uow.name.get_frequent_names_by_country(command.country_name)
             return names
