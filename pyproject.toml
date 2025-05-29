@@ -35,7 +35,6 @@ test = [
     "faker>=37.3.0",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
-    "pytest-xdist>=3.7.0",
 ]
 
 [tool.isort]
