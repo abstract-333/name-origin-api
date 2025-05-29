@@ -1,13 +1,9 @@
 from contextlib import asynccontextmanager
-from typing import cast
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from punq import Container
 
 from application.static_docs import register_static_docs_routes
 from application.v1.name.handlers import router as name_router_v1
-from logic.init import init_container
-from settings.config import Config
 from brotli_asgi import BrotliMiddleware
 
 
@@ -24,27 +20,28 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    container: Container = init_container()
-    config = cast(Config, container.resolve(Config))
+    """Create FastAPI application.
 
-    fastapi_app = FastAPI(
+    Returns:
+        FastAPI: FastAPI application instance
+    """
+    app = FastAPI(
         title='Name Origin API',
-        debug=config.debug,
+        description='API for getting name origins and popular names by country',
+        version='1.0.0',
+        lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
         default_response_class=ORJSONResponse,
-        lifespan=lifespan,
     )
 
-    # Add gzip compression middleware
-    fastapi_app.add_middleware(
-        middleware_class=BrotliMiddleware,
-        quality=6,
-        minimum_size=1000,
-    )
+    # Add middleware
+    app.add_middleware(BrotliMiddleware)
 
-    register_static_docs_routes(app=fastapi_app)
+    # Register routes
+    app.include_router(name_router_v1, prefix='/api/v1')
 
-    fastapi_app.include_router(prefix='/v1', router=name_router_v1)
+    # Register static docs routes
+    register_static_docs_routes(app)
 
-    return fastapi_app
+    return app

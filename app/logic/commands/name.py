@@ -30,8 +30,12 @@ class GetNameOriginsCommandHandler(
         name_origins_sql: list[NameEntity] | None = await self._get_names_origins_db(
             command.name
         )
-        if name_origins_sql and name_origins_sql[0].last_accessed_at and \
-        (datetime.now() - name_origins_sql[0].last_accessed_at) < timedelta(hours=1):
+        if (
+            name_origins_sql
+            and name_origins_sql[0].last_accessed_at
+            and (datetime.now() - name_origins_sql[0].last_accessed_at)
+            < timedelta(days=1)
+        ):
             return name_origins_sql
 
         name_origins_from_api: (
@@ -67,7 +71,7 @@ class GetNameOriginsCommandHandler(
             if name_origins_sql:
                 # If the row exists in db, we just updat the record
                 await self._update_name_db(name_entity=name_entity)
-            
+
             else:
                 # If there is not records with this name, we add a new one
                 await self._save_name_to_db(name_entity=name_entity)
@@ -103,7 +107,7 @@ class GetNameOriginsCommandHandler(
             await self.uow.commit()
 
         return None
-    
+
     async def _update_name_db(self, name_entity: NameEntity) -> None:
         """Update name information in database.
 
