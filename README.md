@@ -14,66 +14,11 @@ This project implements a service that predicts a person's likely country of ori
 - **Country Information**: Rich country data including flags, capitals, and geographical information
 - **RESTful API**: FastAPI-based REST API with OpenAPI documentation
 - **Domain-Driven Design**: Clean architecture with clear separation of concerns
-- **Async Support**: Built with async/await for high performance
-- **Type Safety**: Full type hints and static type checking
 - **Testing**: Comprehensive test suite with pytest
-- **CI/CD**: GitHub Actions workflow for continuous integration
+- **CI**: GitHub Actions workflow for continuous integration (testing & Formating).
 - **Code Quality**: Pre-commit hooks and linting tools
 
-## 🏗️ Architecture
-
-The project follows Domain-Driven Design principles with a clean architecture:
-
-```
-app/
-├── application/     # Application layer (API endpoints, schemas)
-├── domain/         # Domain layer (entities, value objects)
-├── infra/          # Infrastructure layer (repositories, models)
-├── logic/          # Business logic layer (commands, handlers)
-└── tests/          # Test suite
-```
-
-### Key Components
-
-- **Domain Layer**: Contains core business entities and value objects
-  - `CountryEntity`: Represents country data
-  - `NameEntity`: Represents name analysis results
-  - Value Objects: `Name`, `Probability`, `CountOfRequests`
-
-- **Infrastructure Layer**: Implements data access and external services
-  - SQLAlchemy models and repositories
-  - External API integrations
-  - Converters for model-entity transformations
-
-- **Application Layer**: Handles HTTP requests and responses
-  - FastAPI endpoints
-  - Pydantic schemas
-  - Error handling
-
-- **Logic Layer**: Implements business rules
-  - Command handlers
-  - Domain services
-  - Event handlers
-
-## 🛠️ Technology Stack
-
-- **Python 3.13+**: Modern Python features and type hints
-- **FastAPI**: High-performance web framework
-- **SQLAlchemy**: SQL toolkit and ORM
-- **Pydantic**: Data validation and settings management
-- **Alembic**: Database migrations
-- **Pytest**: Testing framework
-- **Ruff**: Fast Python linter
-- **Pre-commit**: Git hooks for code quality
-- **Docker**: Containerization with separate configurations for development and production
-  - Development container includes testing and development libraries
-  - Production container contains only necessary production dependencies
-- **GitHub Actions**: CI/CD pipeline
-- **uv 0.6.7**: Fast Python package installer and resolver
-
-## 🚀 Getting Started
-
-### Quick Start
+## ⚡ Quick Start
 
 To start using the application, you only need:
 1. Docker and Docker Compose installed
@@ -109,7 +54,45 @@ To start using the application, you only need:
    - ReDoc: `http://localhost:8000/api/redoc`
 
 That's it! You're ready to use the application.
+> [!NOTE]
+> You can run 
+`make init-countries`
+> after applying migrations that will fetch all countries from api, in order to achieve better optimization
 
+## 🏗️ Architecture
+
+The project follows Domain-Driven Design principles with a clean architecture:
+
+```
+.github/            # Github actions
+app/
+├── alembic/        # Alembic, for sql migrations
+├── application/    # Application layer (API endpoints, schemas)
+├── domain/         # Domain layer (entities, value objects)
+├── infra/          # Infrastructure layer (repositories, models)
+├── logic/          # Business logic layer (commands, handlers)
+├── scripts/        # Python scripts
+├── scripts/        # Settings, include the configuration of the system
+└── tests/          # Test suite
+```
+
+## 🛠️ Technology Stack
+
+- **Python 3.13+**: Modern Python features and type hints
+- **FastAPI**: High-performance web framework
+- **SQLAlchemy**: SQL toolkit and ORM
+- **Pydantic**: Data validation and settings management
+- **Alembic**: Database migrations
+- **Pytest**: Testing framework
+- **Ruff**: Fast Python linter
+- **Pre-commit**: Git hooks for code quality
+- **Docker**: Containerization with separate configurations for development and production
+  - Development container includes testing and development libraries
+  - Production container contains only necessary production dependencies
+- **GitHub Actions**: CI pipeline
+- **uv 0.6.7**: Fast Python package installer and resolver
+
+## 🚀 Getting Started
 ### Prerequisites
 
 - Python 3.13 or higher
@@ -117,57 +100,38 @@ That's it! You're ready to use the application.
 - Git
 - GNU Make
 
-### Development
 
-The project uses Make commands for common development tasks:
+### Make Commands Reference
 
-1. Start all services (development):
-   ```bash
-   make all
-   ```
+The project uses Make commands to simplify common development and deployment tasks. Here's a comprehensive list of available commands:
 
-2. Start only the application (development):
-   ```bash
-   make app
-   ```
+#### Development Commands
+- `make all` - Starts all services in development mode
+- `make app` - Starts only the application in development mode
+- `make storages` - Starts only the storage services (database, etc.)
+- `make test` - Runs the test suite
+- `make migrations` - Runs database migrations
+- `make app-logs` - Shows application logs in real-time
+- `make app-shell` - Opens a shell inside the application container
+- `make all-down` - Stops all development services
 
-3. Start only the storage services:
-   ```bash
-   make storages
-   ```
+#### Production Commands
+- `make all-prod` - Starts all services in production mode
+- `make app-prod` - Starts only the application in production mode
+- `make storages-prod` - Starts storage services in production mode
+- `make migrations-prod` - Runs database migrations in production
+- `make all-prod-down` - Stops all production services
 
-4. Run tests:
-   ```bash
-   make test
-   ```
+#### Database Management
+- `make downgrade` - Rolls back the last migration
+- `make downgrade-prod` - Rolls back the last migration in production
+- `make create-migration` - Creates a new migration file
+- `make create-migration-prod` - Creates a new migration file in production
+- `make migrations-and-init` - Runs migrations and initializes the container
+- `make init-countries` - Initializes country data in development
+- `make init-countries-prod` - Initializes country data in production
 
-5. Run database migrations:
-   ```bash
-   make migrations
-   ```
-
-6. View application logs:
-   ```bash
-   make app-logs
-   ```
-
-7. Access application shell:
-   ```bash
-   make app-shell
-   ```
-
-8. Stop all services:
-   ```bash
-   make all-down
-   ```
-
-For production deployment, use the corresponding `-prod` commands:
-```bash
-make all-prod
-make app-prod
-make migrations-prod
-make all-prod-down
-```
+The Make commands use Docker Compose profiles (`dev` and `prod`) to manage different environments and configurations. Each command is designed to work with the appropriate environment variables and Docker Compose files.
 
 The project supports two Docker container configurations:
 - **Development**: Includes all development and testing tools, suitable for local development
@@ -229,18 +193,13 @@ Pre-commit hooks ensure code quality before commits.
 - Implemented unit of work pattern for transaction management
 
 ### Performance Optimizations
-- Implemented async/await for external API calls to improve response times
-- Optimized database queries with proper indexing for faster data retrieval
-- Implemented connection pooling to efficiently manage database connections
 - Pre-fetching all countries in the first request since the operation is time-consuming, and with only around 250 countries, we can store them all efficiently
 
 ### Security Measures
-- Implemented input validation using Pydantic models to ensure data integrity
+- Implemented input validation using Pydantic and dataclasses schemas to ensure data integrity
 - Secured environment variable handling to protect sensitive configuration
-- Managed API keys for external services securely
 
 ### Potential Trade-offs
-- Increased complexity due to DDD architecture
 - Additional development time required for proper domain modeling
 - More boilerplate code compared to simpler architectures
 - Steeper learning curve for new developers
