@@ -202,9 +202,11 @@ Pre-commit hooks ensure code quality before commits.
 ### Potential Trade-offs
 - Additional development time required for proper domain modeling
 - More boilerplate code compared to simpler architectures
-- Steeper learning curve for new developers
+
+### Possible Improvements
 - Capital could be implemented as a foreign key in the future, but it's not necessary for the current requirements
 - Border countries could be normalized into a separate table, which would increase complexity but only result in a maximum of 2500 rows (compared to 250), which is manageable for this system
+- Add caching (Redis, Memcached, ...)
 
 ## 📄 License
 
